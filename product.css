@@ -1,0 +1,208 @@
+.logo-hr{
+	margin-top:0px;
+}
+
+.header-logo-awakeen{
+	background:#bbbbbb;
+	margin-bottom:20px;
+}
+
+.container {
+  max-width: 960px;
+}
+
+/*
+ * Custom translucent site header
+ */
+
+.site-header {
+  background-color: #222222;
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  box-shadow: 0 0.5rem 1rem rgba(0,0,0,.05), inset 0 -1px 0 rgba(0,0,0,.1);
+}
+.site-header a {
+  color: #FFF;
+  transition: ease-in-out color .15s;
+}
+.site-header a:hover {
+  color: #EEE;
+  text-decoration: none;
+}
+
+.view .col, .view .col-1, .view .col-2,.view  .col-3,.view  .col-4,.view  .col-5,.view  .col-6,.view  .col-7,.view  .col-8,.view  .col-9,.view  .col-10,.view  .col-11,.view  .col-12,.view  .col-auto,.view  .col-lg,.view  .col-lg-1,.view  .col-lg-2,.view  .col-lg-3,.view  .col-lg-4,.view  .col-lg-5,.view  .col-lg-6,.view  .col-lg-7,.view  .col-lg-8,.view  .col-lg-9,.view  .col-lg-10,.view  .col-lg-11,.view  .col-lg-12,.view  .col-lg-auto,.view  .col-md,.view  .col-md-1,.view  .col-md-2,.view  .col-md-3,.view  .col-md-4,.view  .col-md-5,.view  .col-md-6,.view  .col-md-7,.view  .col-md-8,.view  .col-md-9,.view  .col-md-10,.view  .col-md-11,.view  .col-md-12,.view  .col-md-auto,.view  .col-sm,.view  .col-sm-1,.view  .col-sm-2,.view  .col-sm-3,.view  .col-sm-4,.view  .col-sm-5,.view  .col-sm-6,.view  .col-sm-7,.view  .col-sm-8,.view  .col-sm-9,.view  .col-sm-10,.view  .col-sm-11,.view  .col-sm-12,.view  .col-sm-auto,.view  .col-xl, .col-xl-1,.view  .col-xl-2,.view  .col-xl-3,.view  .col-xl-4,.view  .col-xl-5,.view  .col-xl-6,.view  .col-xl-7,.view  .col-xl-8,.view  .col-xl-9,.view  .col-xl-10,.view  .col-xl-11,.view  .col-xl-12,.view  .col-xl-auto{
+}
+
+.title{
+	padding-left:10px;
+	padding-right:10px;
+}
+
+.card-body{
+	padding: 10px;
+}
+/*
+ * Dummy devices (replace them with your own or something else entirely!)
+ */
+
+.product-device {
+  position: absolute;
+  right: 10%;
+  bottom: -30%;
+  width: 300px;
+  height: 540px;
+  background-color: #333;
+  border-radius: 21px;
+  -webkit-transform: rotate(30deg);
+  transform: rotate(30deg);
+}
+
+.product-device::before {
+  position: absolute;
+  top: 10%;
+  right: 10px;
+  bottom: 10%;
+  left: 10px;
+  content: "";
+  background-color: rgba(255, 255, 255, .1);
+  border-radius: 5px;
+}
+
+.product-device-2 {
+  top: -25%;
+  right: auto;
+  bottom: 0;
+  left: 5%;
+  background-color: #e5e5e5;
+}
+
+
+/*
+ * Extra utilities
+ */
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+  border-radius: 50%;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  opacity: 0.2;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+  opacity: 0.2;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+  opacity: 0.8;
+}
+
+
+.border-top { border-top: 1px solid #e5e5e5; }
+.border-bottom { border-bottom: 1px solid #e5e5e5; }
+
+.box-shadow { box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05); }
+
+.flex-equal > * {
+  -ms-flex: 1;
+  -webkit-box-flex: 1;
+  flex: 1;
+}
+@media (min-width: 768px) {
+  .flex-md-equal > * {
+    -ms-flex: 1;
+    -webkit-box-flex: 1;
+    flex: 1;
+  }
+  
+  #controls{
+	height: auto;
+	overflow: auto;
+  }
+}
+
+.overflow-hidden { overflow: hidden; }
+
+.brand-logo{
+	height: 60px;
+	padding-left:30px;
+}
+
+.search-header{
+	padding-right:30px;
+}
+
+.material-icons{
+	vertical-align: middle;
+}
+
+.frames img, .seats img{
+	width: 32px;
+	height: 32px;
+	margin: 3px;
+	cursor: pointer;
+}
+
+.selected{
+	width: 80px;
+	height: 80px;
+	text-align:center;
+}
+.selected img{
+	display: block;
+    width: -webkit-fill-available;
+}
+
+#controls{
+	height: calc(100vh - 120px);
+	overflow: auto;
+}
+
+#controls .sub-header{
+	
+}
+
+
+#controls img.selected{
+	width: 60px;
+    height: 60px;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.2), 0 1px 5px 0 rgba(0,0,0,.12);
+}
+
+#canvas canvas{
+	width: 100%;
+	height: calc(100vh - 200px);
+	touch-action: none;
+	user-select: none;
+	-webkit-user-drag: none;
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+@media (max-width:320px)  { 
+	/* smartphones, iPhone, portrait 480x320 phones */
+}
+@media (max-width:481px)  { 
+	/* portrait e-readers (Nook/Kindle), smaller tablets @ 600 or @ 640 wide. */
+	#controls{
+		height: auto;
+		overflow: auto;
+	}
+	
+	#selection .card{
+		display: inline-block;
+	}
+	/* .advertise-left, .advertise-right{
+		display: none;
+	} */
+}
+@media (max-width:641px)  { /* portrait tablets, portrait iPad, landscape e-readers, landscape 800x480 or 854x480 phones */ }
+@media (max-width:961px)  { /* tablet, landscape iPad, lo-res laptops ands desktops */ }
+@media (max-width:1025px) { /* big landscape tablets, laptops, and desktops */ }
+@media (max-width:1281px) { /* hi-res laptops and desktops */ }
