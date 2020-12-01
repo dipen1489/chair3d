@@ -90,17 +90,16 @@ var seatObj , frameObj;
 function loadObject()
 {
 	var loader = new THREE.FBXLoader();
-	loader.load( './assets/models3d/chair.fbx', function ( object ) {
+	loader.load( './assets/models3d/chair normal.fbx', function ( object ) {
 	object.position.set(0,-25,0);
 	mainMaterial = new THREE.TextureLoader().load( './assets/materials/m1.png' );
-	metal = new THREE.TextureLoader().load('./assets/materials/metallic.png');
 		object.traverse(function (child) {
 			if (child instanceof THREE.Mesh) {
 				//metal = new THREE.TextureLoader().load('./assets/materials/metallic.png');
 				//normal = new THREE.TextureLoader().load('./assets/materials/normal.png' );
 				//rough = new THREE.TextureLoader().load( './assets/materials/roughness.png' );
 				//mainMaterial = new THREE.TextureLoader().load( './assets/materials/m1.png' );
-				if(child.name == "polySurface29"){
+				/* if(child.name == "polySurface29"){
 					seatObj = child;
 					//child.material.metalnessMap = metal;
 					//child.material.normalMap = normal;
@@ -113,8 +112,15 @@ function loadObject()
 					//child.material[1].normalMap = normal;
 					//child.material[1].roughnessMap = rough;
 					child.material[1].map = mainMaterial;
+				} */
+				if(child.name == "seat1"){
+					seatObj = child;
 				}
-				console.log(child);
+				else if(child.name == "wood1"){
+					frameObj = child;
+				}
+				child.material.map = mainMaterial;
+				//console.log(child);
 				child.material.needsUpdate = true;
 			}
 		}); 

@@ -14,7 +14,6 @@
 	var viewSeats = [];
 	
 $( document ).ready(function() {
-	console.log( "ready!" );
 	start();
 	
 	const canvas 	= $('#canvas');
@@ -52,7 +51,6 @@ $( document ).ready(function() {
     		$(this).addClass('selected');*/
     		var img = $('<img>').attr({'src':$(this).attr('src'),class:''});
     		selectedFrame.html(img);
-    		console.log(allFrames[id]);
     		updateFrame(viewFrames[id]);
     	});
     	
@@ -108,7 +106,6 @@ function generateNestedHTML(container, objectArr, type){
 			console.error(e);
 		}
 	}
-	
 }
 
 function updateFrame(obj){
@@ -116,7 +113,7 @@ function updateFrame(obj){
 	console.log('Update Frame :',obj);
 	var mainMaterial = new THREE.TextureLoader().load(obj.src);
 	//seatObj.material.map = mainMaterial;
-	frameObj.material[1].map = mainMaterial;
+	frameObj.material.map = mainMaterial;
 	//frameObj.material[2].map = mainMaterial;
 	//seatObj , frameObj;
 	
