@@ -1,3 +1,7 @@
+*:focus {
+  outline: none;
+}
+
 .logo-hr{
 	margin-top:0px;
 }

@@ -24,7 +24,7 @@ function init()
 {
   scene = new THREE.Scene();
   scene.background = new THREE.Color(BACKGROUND_COLOR );
-  CameraControls.install( { THREE: THREE } );
+  //CameraControls.install( { THREE: THREE } );
   
   camera = new THREE.PerspectiveCamera( 56, window.innerWidth/window.innerHeight, 0.1, 10000 );
   //camera.position.set( 0, 90, 0 );
@@ -54,18 +54,24 @@ function init()
   var heightCanvas = ConvertPercentageToPx(window.innerHeight , myCanvas.style.height.replace("%", ""));
   renderer.setSize( widthCanvas, heightCanvas); */
   
-  cameraControls = new CameraControls( camera, renderer.domElement );
-  cameraControls.dollyToCursor = true;
+  //cameraControls = new CameraControls( camera, renderer.domElement );
+  //cameraControls.dollyToCursor = false;
+  //cameraControls.dollySpeed = 0;
   //cameraControls.maxPolarAngle = 1.24;
   
-  var ambientLight = new THREE.AmbientLight( 0xcccccc, 4 );
+  
+  cameraControls = new THREE.OrbitControls( camera, renderer.domElement );
+  cameraControls.enablePan = false;
+  
+  
+  var ambientLight = new THREE.AmbientLight( 0xcccccc, 3.5 );
   scene.add( ambientLight );
   
-  var directionalLightFront = new THREE.DirectionalLight( 0xcccccc, 0.3 );
-  directionalLightFront.position.set(0,60,90);
+  var directionalLightFront = new THREE.DirectionalLight( 0xcccccc, 0.1 );
+  directionalLightFront.position.set(0,27,76);
   scene.add( directionalLightFront );
   
-  var directionalLightBack = new THREE.DirectionalLight( 0xcccccc, 0.3 );
+  var directionalLightBack = new THREE.DirectionalLight( 0xcccccc, 0.1 );
   directionalLightBack.position.set(0,0,-90);
   scene.add( directionalLightBack );
 }
@@ -86,30 +92,31 @@ function loadObject()
 	var loader = new THREE.FBXLoader();
 	loader.load( './assets/models3d/chair.fbx', function ( object ) {
 	object.position.set(0,-25,0);
-		 object.traverse(function (child) {
-				if (child instanceof THREE.Mesh) {
-					metal = new THREE.TextureLoader().load('./assets/materials/metallic.png');
-					normal = new THREE.TextureLoader().load('./assets/materials/normal.png' );
-					rough = new THREE.TextureLoader().load( './assets/materials/roughness.png' );
-					mainMaterial = new THREE.TextureLoader().load( './assets/materials/m1.png' );
-					if(child.name == "polySurface29"){
-						seatObj = child;
-						child.material.metalnessMap = metal;
-						child.material.normalMap = normal;
-						child.material.roughnessMap = rough;
-						child.material.map = mainMaterial;
-						
-					}
-					else if(child.name == "polySurface35"){
-						frameObj = child;
-						child.material[1].metalnessMap = metal;
-						child.material[1].normalMap = normal;
-						child.material[1].roughnessMap = rough;
-						child.material[1].map = mainMaterial;
-					}
-					console.log(child);
-					child.material.needsUpdate = true;
+	mainMaterial = new THREE.TextureLoader().load( './assets/materials/m1.png' );
+	metal = new THREE.TextureLoader().load('./assets/materials/metallic.png');
+		object.traverse(function (child) {
+			if (child instanceof THREE.Mesh) {
+				//metal = new THREE.TextureLoader().load('./assets/materials/metallic.png');
+				//normal = new THREE.TextureLoader().load('./assets/materials/normal.png' );
+				//rough = new THREE.TextureLoader().load( './assets/materials/roughness.png' );
+				//mainMaterial = new THREE.TextureLoader().load( './assets/materials/m1.png' );
+				if(child.name == "polySurface29"){
+					seatObj = child;
+					//child.material.metalnessMap = metal;
+					//child.material.normalMap = normal;
+					//child.material.roughnessMap = rough;
+					child.material.map = mainMaterial;
 				}
+				else if(child.name == "polySurface35"){
+					frameObj = child;
+					//child.material[1].metalnessMap = metal;
+					//child.material[1].normalMap = normal;
+					//child.material[1].roughnessMap = rough;
+					child.material[1].map = mainMaterial;
+				}
+				console.log(child);
+				child.material.needsUpdate = true;
+			}
 		}); 
 		scene.add( object );
 	} , undefined , function ( e ) {
@@ -119,10 +126,12 @@ function loadObject()
 }
 
 var animate = function animate() {
-  const delta = clock.getDelta();
-  const hasControlsUpdated = cameraControls.update( delta );
+  //const delta = clock.getDelta();
+  //const hasControlsUpdated = cameraControls.update( delta );
+  
     //console.log(camera.position);
 	requestAnimationFrame( animate );
+	cameraControls.update();
 	renderer.render( scene, camera );
 };
 
