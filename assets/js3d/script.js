@@ -24,7 +24,7 @@ function init()
 {
   scene = new THREE.Scene();
   scene.background = new THREE.Color(BACKGROUND_COLOR );
-  //CameraControls.install( { THREE: THREE } );
+  CameraControls.install( { THREE: THREE } );
   
   camera = new THREE.PerspectiveCamera( 56, window.innerWidth/window.innerHeight, 0.1, 10000 );
   //camera.position.set( 0, 90, 0 );
@@ -34,8 +34,13 @@ function init()
   console.log(myCanvas.clientWidth);
   console.log(myCanvas.clientHeight);
   renderer = new THREE.WebGLRenderer({antialias: true, canvas: myCanvas});
-  console.log(window.devicePixelRatio);
-  renderer.setPixelRatio( 3 );
+  //console.log(window.devicePixelRatio);
+  renderer.setPixelRatio( window.devicePixelRatio );
+  
+	//renderer.gammaOutput = true;
+	//renderer.gammaFactor = 1.3;
+	renderer.shadowMap.enabled = false;
+	renderer.autoClear = false;
   
   camera.aspect = myCanvas.clientWidth / myCanvas.clientHeight;
   camera.updateProjectionMatrix();
@@ -54,25 +59,27 @@ function init()
   var heightCanvas = ConvertPercentageToPx(window.innerHeight , myCanvas.style.height.replace("%", ""));
   renderer.setSize( widthCanvas, heightCanvas); */
   
-  //cameraControls = new CameraControls( camera, renderer.domElement );
+  cameraControls = new CameraControls( camera, renderer.domElement );
   //cameraControls.dollyToCursor = false;
   //cameraControls.dollySpeed = 0;
   //cameraControls.maxPolarAngle = 1.24;
   
   
-  cameraControls = new THREE.OrbitControls( camera, renderer.domElement );
-  cameraControls.enablePan = false;
+  //cameraControls = new THREE.OrbitControls( camera, renderer.domElement );
+  //cameraControls.enablePan = false;
   
   
-  var ambientLight = new THREE.AmbientLight( 0xcccccc, 3.5 );
+  var ambientLight = new THREE.AmbientLight( 0xffffff, 1.2 );
   scene.add( ambientLight );
   
-  var directionalLightFront = new THREE.DirectionalLight( 0xcccccc, 0.1 );
+  var directionalLightFront = new THREE.DirectionalLight( 0xffffff, 0.2 );
   directionalLightFront.position.set(0,27,76);
+  directionalLightFront.castShadow = true;
   scene.add( directionalLightFront );
   
-  var directionalLightBack = new THREE.DirectionalLight( 0xcccccc, 0.1 );
+  var directionalLightBack = new THREE.DirectionalLight( 0xffffff, 0.2 );
   directionalLightBack.position.set(0,0,-90);
+  directionalLightBack.castShadow = true;
   scene.add( directionalLightBack );
 }
 
@@ -92,52 +99,56 @@ function loadObject()
 	var loader = new THREE.FBXLoader();
 	loader.load( './assets/models3d/chair normal.fbx', function ( object ) {
 	object.position.set(0,-25,0);
-	mainMaterial = new THREE.TextureLoader().load( './assets/materials/m1.png' );
+	
+	var mainMaterial = new THREE.TextureLoader().load( './assets/materials/m1.png' );
+	var metal = new THREE.TextureLoader().load('./assets/materials/metallic.png');
+	var rough = new THREE.TextureLoader().load( './assets/materials/roughness.png' );
+	var normal = new THREE.TextureLoader().load('./assets/materials/normal.png' );
+	
 		object.traverse(function (child) {
 			if (child instanceof THREE.Mesh) {
-				//metal = new THREE.TextureLoader().load('./assets/materials/metallic.png');
-				//normal = new THREE.TextureLoader().load('./assets/materials/normal.png' );
-				//rough = new THREE.TextureLoader().load( './assets/materials/roughness.png' );
-				//mainMaterial = new THREE.TextureLoader().load( './assets/materials/m1.png' );
-				/* if(child.name == "polySurface29"){
-					seatObj = child;
-					//child.material.metalnessMap = metal;
-					//child.material.normalMap = normal;
-					//child.material.roughnessMap = rough;
-					child.material.map = mainMaterial;
-				}
-				else if(child.name == "polySurface35"){
-					frameObj = child;
-					//child.material[1].metalnessMap = metal;
-					//child.material[1].normalMap = normal;
-					//child.material[1].roughnessMap = rough;
-					child.material[1].map = mainMaterial;
-				} */
 				if(child.name == "seat1"){
 					seatObj = child;
+					const sphereMaterial1 = new THREE.MeshStandardMaterial();
+					sphereMaterial1.metalnessMap = metal;
+					sphereMaterial1.roughnessMap = rough;
+					sphereMaterial1.normalMap = normal;
+					sphereMaterial1.map = mainMaterial;
+					child.material = sphereMaterial1;
 				}
 				else if(child.name == "wood1"){
 					frameObj = child;
+					const sphereMaterial1 = new THREE.MeshStandardMaterial();
+					sphereMaterial1.metalnessMap = metal;
+					sphereMaterial1.roughnessMap = rough;
+					sphereMaterial1.normalMap = normal;
+					sphereMaterial1.map = mainMaterial;
+					child.material = sphereMaterial1;
 				}
-				child.material.map = mainMaterial;
-				//console.log(child);
+				child.receiveShadow = true;
+				//child.material = sphereMaterial1;
+				/* child.material.metalnessMap = metal;
+				child.material.roughnessMap = rough;
+				child.material.normalMap = normal;
+				child.material.map = mainMaterial; */
 				child.material.needsUpdate = true;
+				console.log(child);
 			}
 		}); 
 		scene.add( object );
 	} , undefined , function ( e ) {
 		console.log( e );
 	}); 
-	  
+	
 }
 
 var animate = function animate() {
-  //const delta = clock.getDelta();
-  //const hasControlsUpdated = cameraControls.update( delta );
+  const delta = clock.getDelta();
+  const hasControlsUpdated = cameraControls.update( delta );
   
     //console.log(camera.position);
 	requestAnimationFrame( animate );
-	cameraControls.update();
+	//cameraControls.update();
 	renderer.render( scene, camera );
 };
 
