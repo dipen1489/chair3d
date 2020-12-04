@@ -2,6 +2,11 @@
   outline: none;
 }
 
+.instruction{
+	text-align:center;
+	font-size: 12px;
+}
+
 .logo-hr{
 	margin-top:0px;
 }
@@ -155,8 +160,8 @@
 }
 
 .selected{
-	width: 115%;
-    height: 115%;
+	width: 80px;
+    height: 80px;
 	text-align:center;
 }
 .selected img{

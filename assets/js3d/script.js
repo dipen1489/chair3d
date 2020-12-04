@@ -1,6 +1,6 @@
 const clock = new THREE.Clock();
 var scene;
-const BACKGROUND_COLOR = 0xeeeeee;
+const BACKGROUND_COLOR = 0xdddddd;
 var camera;
 var renderer;
 var cameraControls ;
@@ -24,7 +24,7 @@ function init()
 {
   scene = new THREE.Scene();
   scene.background = new THREE.Color(BACKGROUND_COLOR );
-  CameraControls.install( { THREE: THREE } );
+  //CameraControls.install( { THREE: THREE } );
   
   camera = new THREE.PerspectiveCamera( 56, window.innerWidth/window.innerHeight, 0.1, 10000 );
   //camera.position.set( 0, 90, 0 );
@@ -39,8 +39,8 @@ function init()
   
 	//renderer.gammaOutput = true;
 	//renderer.gammaFactor = 1.3;
-	renderer.shadowMap.enabled = false;
-	renderer.autoClear = false;
+	//renderer.shadowMap.enabled = false;
+	//renderer.autoClear = false;
   
   camera.aspect = myCanvas.clientWidth / myCanvas.clientHeight;
   camera.updateProjectionMatrix();
@@ -48,6 +48,9 @@ function init()
   //var widthCanvas = ConvertPercentageToPx(window.innerWidth , myCanvas.style.width.replace("%", ""));
   //var heightCanvas = ConvertPercentageToPx(window.innerHeight , myCanvas.style.height.replace("%", ""));
   renderer.setSize( myCanvas.clientWidth, myCanvas.clientHeight);
+  renderer.shadowMap.enabled = true;
+  //renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  
   //renderer.setSize( window.innerWidth, window.innerHeight );
   //document.body.appendChild( renderer.domElement ); 
   
@@ -59,28 +62,42 @@ function init()
   var heightCanvas = ConvertPercentageToPx(window.innerHeight , myCanvas.style.height.replace("%", ""));
   renderer.setSize( widthCanvas, heightCanvas); */
   
-  cameraControls = new CameraControls( camera, renderer.domElement );
-  //cameraControls.dollyToCursor = false;
+  //cameraControls = new CameraControls( camera, renderer.domElement );
+  //cameraControls.dollyToCursor = true;
   //cameraControls.dollySpeed = 0;
   //cameraControls.maxPolarAngle = 1.24;
   
   
-  //cameraControls = new THREE.OrbitControls( camera, renderer.domElement );
-  //cameraControls.enablePan = false;
+  cameraControls = new THREE.OrbitControls( camera, renderer.domElement );
+  cameraControls.enablePan = false;
   
   
-  var ambientLight = new THREE.AmbientLight( 0xffffff, 1.2 );
+  var ambientLight = new THREE.AmbientLight( 0xffffff, 0.5 );
   scene.add( ambientLight );
   
-  var directionalLightFront = new THREE.DirectionalLight( 0xffffff, 0.2 );
-  directionalLightFront.position.set(0,27,76);
-  directionalLightFront.castShadow = true;
+  var directionalLightFront = new THREE.DirectionalLight( 0xffffff, 0.3 );
+  directionalLightFront.position.set(0,0,90);
+  //directionalLightFront.castShadow = true;
   scene.add( directionalLightFront );
   
-  var directionalLightBack = new THREE.DirectionalLight( 0xffffff, 0.2 );
+  var directionalLightBack = new THREE.DirectionalLight( 0xffffff, 0.3 );
   directionalLightBack.position.set(0,0,-90);
-  directionalLightBack.castShadow = true;
+  //directionalLightBack.castShadow = true;
   scene.add( directionalLightBack );
+  
+    const light = new THREE.SpotLight( 0xffffff , 0.1 );
+	light.position.set( 100, 1000, 100 ); 
+	light.shadow.mapSize.width = 1024; 
+	light.castShadow = true; // default false
+	light.shadow.camera.far = 4000;
+	light.shadow.camera.fov = 30;
+	//scene.add( light );
+	
+	var light1 = new THREE.PointLight( 0x555555, 2.5, 150 );
+    light1.position.set( 25, 35, 0 );
+    light1.castShadow = true;            // default false
+    scene.add( light1 );
+  
 }
 
 function ConvertPercentageToPx(mainData , percentage)
@@ -112,20 +129,28 @@ function loadObject()
 					const sphereMaterial1 = new THREE.MeshStandardMaterial();
 					sphereMaterial1.metalnessMap = metal;
 					sphereMaterial1.roughnessMap = rough;
+					sphereMaterial1.roughness = 1;
 					sphereMaterial1.normalMap = normal;
 					sphereMaterial1.map = mainMaterial;
 					child.material = sphereMaterial1;
+					child.castShadow = true;
+					child.receiveShadow = true;
 				}
 				else if(child.name == "wood1"){
 					frameObj = child;
 					const sphereMaterial1 = new THREE.MeshStandardMaterial();
 					sphereMaterial1.metalnessMap = metal;
-					sphereMaterial1.roughnessMap = rough;
+					//sphereMaterial1.roughnessMap = rough;
+					sphereMaterial1.roughness = 0.4;
+					sphereMaterial1.metalness = 0.9;
 					sphereMaterial1.normalMap = normal;
 					sphereMaterial1.map = mainMaterial;
 					child.material = sphereMaterial1;
+					child.castShadow = true;
+					child.receiveShadow = true;
 				}
-				child.receiveShadow = true;
+				//child.castShadow = true;
+				//child.receiveShadow = false;
 				//child.material = sphereMaterial1;
 				/* child.material.metalnessMap = metal;
 				child.material.roughnessMap = rough;
@@ -143,12 +168,12 @@ function loadObject()
 }
 
 var animate = function animate() {
-  const delta = clock.getDelta();
-  const hasControlsUpdated = cameraControls.update( delta );
+  //const delta = clock.getDelta();
+  //const hasControlsUpdated = cameraControls.update( delta );
   
     //console.log(camera.position);
 	requestAnimationFrame( animate );
-	//cameraControls.update();
+	cameraControls.update();
 	renderer.render( scene, camera );
 };
 
