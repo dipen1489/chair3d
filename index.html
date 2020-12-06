@@ -27,7 +27,7 @@
 	<script src='assets/js3d/FBXLoader.js'></script>
 	<script src='assets/js3d/inflate.min.js'></script>
 	<script src="assets/js3d/camera-controls.js"></script>
-	<!-- <script src="assets/js3d/OrbitControls.js"></script> -->
+	<script src="assets/js3d/OrbitControls.js"></script>
 	<script src="assets/js3d/script.js"></script>
   </head>
 
@@ -63,6 +63,9 @@
 			<div class="col-sm-12 col-md-12 col-lg-8 mb-3" id="canvas">
 				<div style="height:100%" class="card bg-light">
 					<div class="card-body">
+						<div class="loadingImageContainerStyle">
+							<img id="LoadingImage" src="./assets/images/loading1.gif" class="loadingImageStyle" />
+						</div>
 						<canvas style="width:100%;height:100%" id="previewCanvas" class="canvas1" ></canvas>
 						
 						<div class="canvas-controls row p-0 m-1 d-none d-sm-block">

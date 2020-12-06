@@ -137,9 +137,11 @@ function generateNestedHTML(container, objectArr, type){
 }
 
 function updateFrame(obj){
+	$(".loadingImageContainerStyle").css("display","block");
 	selectedFrameObject = obj;
-	console.log('Update Frame :',obj);
-	var mainMaterial = new THREE.TextureLoader().load(obj.src);
+	var mainMaterial = new THREE.TextureLoader().load(obj.src,function(){
+		$(".loadingImageContainerStyle").css("display","none");
+	});
 	mainMaterial.wrapS = THREE.RepeatWrapping;
 	mainMaterial.wrapT = THREE.RepeatWrapping;
 	mainMaterial.repeat.set( 1, 1 );
@@ -159,9 +161,11 @@ function updateFrame(obj){
 }
 
 function updateSeat(obj){
+	$(".loadingImageContainerStyle").css("display","block");
 	selectedSeatObject = obj;
-	console.log('Update Seat :',obj);
-	var mainMaterial = new THREE.TextureLoader().load(obj.src);
+	var mainMaterial = new THREE.TextureLoader().load(obj.src,function(){
+		$(".loadingImageContainerStyle").css("display","none");
+	});
 	mainMaterial.wrapS = THREE.RepeatWrapping;
 	mainMaterial.wrapT = THREE.RepeatWrapping;
 	mainMaterial.repeat.set( 1, 1 );

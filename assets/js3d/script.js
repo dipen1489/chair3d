@@ -22,80 +22,43 @@ var MAP_HEIGHT = 14800;
 
 function init()
 {
-  scene = new THREE.Scene();
-  scene.background = new THREE.Color(BACKGROUND_COLOR );
-  CameraControls.install( { THREE: THREE } );
-  
-  camera = new THREE.PerspectiveCamera( 56, window.innerWidth/window.innerHeight, 0.1, 10000 );
-  //camera.position.set( 0, 90, 0 );
-  camera.position.set( 0, 27, 76 );
-  
-  var myCanvas = document.getElementById("previewCanvas");
-  console.log(myCanvas.clientWidth);
-  console.log(myCanvas.clientHeight);
-  renderer = new THREE.WebGLRenderer({antialias: true, canvas: myCanvas});
-  //console.log(window.devicePixelRatio);
-  renderer.setPixelRatio( window.devicePixelRatio );
-  
-	//renderer.gammaOutput = true;
-	//renderer.gammaFactor = 1.3;
-	//renderer.shadowMap.enabled = false;
-	//renderer.autoClear = false;
-  
-  camera.aspect = myCanvas.clientWidth / myCanvas.clientHeight;
-  camera.updateProjectionMatrix();
-  
-  //var widthCanvas = ConvertPercentageToPx(window.innerWidth , myCanvas.style.width.replace("%", ""));
-  //var heightCanvas = ConvertPercentageToPx(window.innerHeight , myCanvas.style.height.replace("%", ""));
-  renderer.setSize( myCanvas.clientWidth, myCanvas.clientHeight);
-  renderer.shadowMap.enabled = true;
-  //renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  
-  //renderer.setSize( window.innerWidth, window.innerHeight );
-  //document.body.appendChild( renderer.domElement ); 
-  
-  /* var myCanvas = document.getElementById("previewCanvas");
-  renderer = new THREE.WebGLRenderer({antialias: true, canvas: myCanvas});
-  renderer.setPixelRatio( window.devicePixelRatio );
-  console.log("canvas height : ",myCanvas);
-  var widthCanvas = ConvertPercentageToPx(window.innerWidth , myCanvas.style.width.replace("%", ""));
-  var heightCanvas = ConvertPercentageToPx(window.innerHeight , myCanvas.style.height.replace("%", ""));
-  renderer.setSize( widthCanvas, heightCanvas); */
-  
-  cameraControls = new CameraControls( camera, renderer.domElement );
-  cameraControls.dollyToCursor = true;
-  //cameraControls.dollySpeed = 0;
-  //cameraControls.maxPolarAngle = 1.24;
-  
-  
-  //cameraControls = new THREE.OrbitControls( camera, renderer.domElement );
- // cameraControls.enablePan = false;
-  
-  
-  var ambientLight = new THREE.AmbientLight( 0xffffff, 0.5 );
-  scene.add( ambientLight );
-  
-  var directionalLightFront = new THREE.DirectionalLight( 0xffffff, 0.3 );
-  directionalLightFront.position.set(0,0,90);
-  //directionalLightFront.castShadow = true;
-  scene.add( directionalLightFront );
-  
-  var directionalLightBack = new THREE.DirectionalLight( 0xffffff, 0.3 );
-  directionalLightBack.position.set(0,0,-90);
-  //directionalLightBack.castShadow = true;
-  scene.add( directionalLightBack );
-  
-    const light = new THREE.SpotLight( 0xffffff , 0.1 );
-	light.position.set( 100, 1000, 100 ); 
-	light.shadow.mapSize.width = 1024; 
-	light.castShadow = true; // default false
-	light.shadow.camera.far = 4000;
-	light.shadow.camera.fov = 30;
-	//scene.add( light );
+	scene = new THREE.Scene();
+	scene.background = new THREE.Color(BACKGROUND_COLOR );
+	CameraControls.install( { THREE: THREE } );
+
+	camera = new THREE.PerspectiveCamera( 56, window.innerWidth/window.innerHeight, 0.1, 10000 );
+	camera.position.set( 0, 27, 76 );
+
+	var myCanvas = document.getElementById("previewCanvas");
+	renderer = new THREE.WebGLRenderer({antialias: true, canvas: myCanvas});
+	renderer.setPixelRatio( window.devicePixelRatio );
+	camera.aspect = myCanvas.clientWidth / myCanvas.clientHeight;
+	camera.updateProjectionMatrix();
+	renderer.setSize( myCanvas.clientWidth, myCanvas.clientHeight);
+	renderer.shadowMap.enabled = true;
+	if(getMobileOperatingSystem() == "unknown"){
+		cameraControls = new CameraControls( camera, renderer.domElement );
+		cameraControls.dollyToCursor = true;
+	}
+	else{
+		cameraControls = new THREE.OrbitControls( camera, renderer.domElement );
+		cameraControls.enablePan = false;
+	}
 	
+	var ambientLight = new THREE.AmbientLight( 0xffffff, 0.5 );
+	scene.add( ambientLight );
+
+	var directionalLightFront = new THREE.DirectionalLight( 0xffffff, 0.3 );
+	directionalLightFront.position.set(0,0,90);
+	scene.add( directionalLightFront );
+
+	var directionalLightBack = new THREE.DirectionalLight( 0xffffff, 0.3 );
+	directionalLightBack.position.set(0,0,-90);
+	scene.add( directionalLightBack );
+  
 	var light1 = new THREE.PointLight( 0x555555, 2.5, 150 );
     light1.position.set( 25, 35, 0 );
-    light1.castShadow = true;            // default false
+    light1.castShadow = true;         
     scene.add( light1 );
   
 }
@@ -121,6 +84,7 @@ function RemvePreviousObject(){
 
 function loadClientObject()
 {
+	$(".loadingImageContainerStyle").css("display","block");
 	cameraControls.reset();
 	RemvePreviousObject();
 	var loader = new THREE.FBXLoader();
@@ -140,100 +104,153 @@ function loadClientObject()
 				child.material[0].map = mainMaterialWood;
 				child.material[1].map = mainMaterialSeat;
 				child.material.needsUpdate = true;
-				console.log(child);
 			}
 		}); 
+		$(".loadingImageContainerStyle").css("display","none");
 		scene.add( object );
 	} , undefined , function ( e ) {
 		console.log( e );
+		$(".loadingImageContainerStyle").css("display","none");
 	}); 
-	
 }
 
-function loadObject()
+var texturePromises = [];
+var textures = {};
+function LoadTexture(map ,roughnessMap, metalnessMap , normalMap)
 {
+	var textureLoader = new THREE.TextureLoader();
+	textures = {
+		'map': {
+		  url: map,
+		  val: undefined
+		},
+		'roughness': {
+		  url: roughnessMap,
+		  val: undefined
+		},
+		'metal': {
+		  url: metalnessMap,
+		  val: undefined
+		},
+		'normal': {
+		  url: normalMap,
+		  val: undefined
+		}
+	};
+	  // earth textures
+	for (var key in textures) {
+		texturePromises.push(new Promise((resolve, reject) => {
+		  var entry = textures[key]
+		  var url = entry.url
+		  textureLoader.load(url,
+			texture => {
+			  entry.val = texture;
+			  if (entry.val instanceof THREE.Texture) resolve(entry);
+			},
+			xhr => {
+			  console.log(url + ' ' + (xhr.loaded / xhr.total * 100) +
+				'% loaded');
+			},
+			xhr => {
+			  reject(new Error(xhr +
+				'An error occurred loading while loading: ' +
+				entry.url));
+			}
+		  );
+		}));
+	}
+	return textures;
+}
+
+async function loadObject()
+{
+	$(".loadingImageContainerStyle").css("display","block");
+	var seatTexture = await LoadTexture(selectedSeatObject.src , './assets/materials/seat/roughness.png' ,'./assets/materials/seat/metal.png' , './assets/materials/seat/normal.png' );
+	
+	var frameTexture = await LoadTexture(selectedFrameObject.src , './assets/materials/wood/roughness.png' ,'./assets/materials/wood/metal.png' , './assets/materials/wood/normal.png' );
+
 	cameraControls.reset();
 	RemvePreviousObject();
 	var loader = new THREE.FBXLoader();
 	loader.load( './assets/models3d/chair_uv.fbx', function ( object ) {
 	object.position.set(0,-25,0);
 	object.name = "Chair";
-	var mainMaterialSeat = new THREE.TextureLoader().load(selectedSeatObject.src );
-	mainMaterialSeat.wrapS = THREE.RepeatWrapping;
-	mainMaterialSeat.wrapT = THREE.RepeatWrapping;
-	mainMaterialSeat.repeat.set( 1, 1 );
-	var metalSeat = new THREE.TextureLoader().load('./assets/materials/seat/metal.png');
-	var roughSeat = new THREE.TextureLoader().load( './assets/materials/seat/roughness.png' );
-	var normalSeat = new THREE.TextureLoader().load('./assets/materials/seat/normal.png' );
-	
-	var mainMaterialFrame = new THREE.TextureLoader().load( selectedFrameObject.src );
-	mainMaterialFrame.wrapS = THREE.RepeatWrapping;
-	mainMaterialFrame.wrapT = THREE.RepeatWrapping;
-	mainMaterialFrame.repeat.set( 1, 1 );
-	var metalFrame = new THREE.TextureLoader().load('./assets/materials/wood/metal.png');
-	var roughFrame = new THREE.TextureLoader().load( './assets/materials/wood/roughness.png' );
-	var normalFrame = new THREE.TextureLoader().load('./assets/materials/wood/normal.png' );
-	
-		object.traverse(function (child) {
-			if (child instanceof THREE.Mesh) {
-				if(child.name == "polySurface13"){ // seat
-					const seatMaterial = new THREE.MeshStandardMaterial();
-					seatMaterial.metalnessMap = metalSeat;
-					seatMaterial.roughnessMap = roughSeat;
-					seatMaterial.roughness = 1;
-					seatMaterial.normalMap = normalSeat;
-					seatMaterial.map = mainMaterialSeat;
-					child.material = seatMaterial;
-					child.castShadow = true;
-					child.receiveShadow = true;
-					seatObj = child.material;
-				}
-				else if(child.name == "polySurface10"){ // Frame
-					const frameMaterial = new THREE.MeshStandardMaterial();
-					frameMaterial.metalnessMap = metalFrame;
-					//frameMaterial.roughnessMap = roughFrame;
-					frameMaterial.roughness = 0.4;
-					frameMaterial.metalness = 0.9;
-					frameMaterial.normalMap = normalFrame;
-					frameMaterial.map = mainMaterialFrame;
-					child.material = frameMaterial;
-					child.castShadow = true;
-					child.receiveShadow = true;
-					frameObj = child.material;
-				}
-				//child.castShadow = true;
-				//child.receiveShadow = false;
-				//child.material = sphereMaterial1;
-				//child.material.metalnessMap = metal;
-				//child.material.roughnessMap = rough;
-				//child.material.normalMap = normal;
-				//child.material.map = mainMaterial;
-				child.material.needsUpdate = true;
-				console.log(child);
+	object.traverse(function (child) {
+		if (child instanceof THREE.Mesh) {
+			if(child.name == "polySurface13"){ // seat
+				const seatMaterial = new THREE.MeshStandardMaterial();
+				seatMaterial.metalnessMap = seatTexture.metal.val;
+				seatMaterial.roughnessMap = seatTexture.roughness.val;
+				seatMaterial.roughness = 1;
+				seatMaterial.normalMap = seatTexture.normal.val;
+				seatMaterial.map = seatTexture.map.val;
+				seatMaterial.map.wrapS = THREE.RepeatWrapping;
+				seatMaterial.map.wrapT = THREE.RepeatWrapping;
+				seatMaterial.map.repeat.set( 1, 1 );
+				child.material = seatMaterial;
+				child.castShadow = true;
+				child.receiveShadow = true;
+				seatObj = child.material;
 			}
-		}); 
-		scene.add( object );
+			else if(child.name == "polySurface10"){ // Frame
+				const frameMaterial = new THREE.MeshStandardMaterial();
+				frameMaterial.metalnessMap = frameTexture.metal.val;
+				//frameMaterial.roughnessMap = roughFrame;
+				frameMaterial.roughness = 0.4;
+				frameMaterial.metalness = 0.9;
+				frameMaterial.normalMap = frameTexture.normal.val;
+				frameMaterial.map = frameTexture.map.val;
+				frameMaterial.map.wrapS = THREE.RepeatWrapping;
+				frameMaterial.map.wrapT = THREE.RepeatWrapping;
+				frameMaterial.map.repeat.set( 1, 1 );
+				child.material = frameMaterial;
+				child.castShadow = true;
+				child.receiveShadow = true;
+				frameObj = child.material;
+			}
+			child.material.needsUpdate = true;
+		}
+	}); 
+	$(".loadingImageContainerStyle").css("display","none");
+	scene.add( object );
+	
 	} , undefined , function ( e ) {
 		console.log( e );
+		$(".loadingImageContainerStyle").css("display","none");
 	}); 
 	
 }
 
 var animate = function animate() {
-  const delta = clock.getDelta();
-  const hasControlsUpdated = cameraControls.update( delta );
-  
-    //console.log(camera.position);
+	if(getMobileOperatingSystem() == "unknown"){
+		const delta = clock.getDelta();
+		const hasControlsUpdated = cameraControls.update( delta );
+	}
+	else{
+		cameraControls.update();
+	}
 	requestAnimationFrame( animate );
-	//cameraControls.update();
 	renderer.render( scene, camera );
 };
 
+function getMobileOperatingSystem() {
+	var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+	if (/windows phone/i.test(userAgent)) {
+		return "Windows Phone";
+	}
+	if (/android/i.test(userAgent)) {
+		return "Android";
+	}
+	if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+		return "iOS";
+	}
+	return "unknown";
+}
+
 function start()
 {
-  init();
-  //loadObject();
-  loadClientObject();
-  animate();
+	init();
+	loadClientObject();
+	animate();
 }
 
