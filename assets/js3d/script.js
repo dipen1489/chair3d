@@ -24,7 +24,7 @@ function init()
 {
   scene = new THREE.Scene();
   scene.background = new THREE.Color(BACKGROUND_COLOR );
-  //CameraControls.install( { THREE: THREE } );
+  CameraControls.install( { THREE: THREE } );
   
   camera = new THREE.PerspectiveCamera( 56, window.innerWidth/window.innerHeight, 0.1, 10000 );
   //camera.position.set( 0, 90, 0 );
@@ -62,14 +62,14 @@ function init()
   var heightCanvas = ConvertPercentageToPx(window.innerHeight , myCanvas.style.height.replace("%", ""));
   renderer.setSize( widthCanvas, heightCanvas); */
   
-  //cameraControls = new CameraControls( camera, renderer.domElement );
-  //cameraControls.dollyToCursor = true;
+  cameraControls = new CameraControls( camera, renderer.domElement );
+  cameraControls.dollyToCursor = true;
   //cameraControls.dollySpeed = 0;
   //cameraControls.maxPolarAngle = 1.24;
   
   
-  cameraControls = new THREE.OrbitControls( camera, renderer.domElement );
-  cameraControls.enablePan = false;
+  //cameraControls = new THREE.OrbitControls( camera, renderer.domElement );
+ // cameraControls.enablePan = false;
   
   
   var ambientLight = new THREE.AmbientLight( 0xffffff, 0.5 );
@@ -111,51 +111,103 @@ function toRadians(degrees) {
 
 var seatObj , frameObj;
 
+function RemvePreviousObject(){
+	var textObject = scene.getObjectByName("Chair");
+	if(textObject !== undefined){
+		scene.remove(textObject);
+		animate();
+	}
+}
+
+function loadClientObject()
+{
+	cameraControls.reset();
+	RemvePreviousObject();
+	var loader = new THREE.FBXLoader();
+	var mainMaterialSeat = new THREE.TextureLoader().load( selectedSeatObject.src );
+	mainMaterialSeat.wrapS = THREE.RepeatWrapping;
+	mainMaterialSeat.wrapT = THREE.RepeatWrapping;
+	mainMaterialSeat.repeat.set( 1, 1 );
+	var mainMaterialWood = new THREE.TextureLoader().load( selectedFrameObject.src );
+	loader.load( './assets/models3d/Rudolf_Castle_Line.FBX', function ( object ) {
+	object.name = "Chair";
+	object.position.set(0,-25,0);
+	object.scale.set(0.7,0.7,0.7);
+		object.traverse(function (child) {
+			if (child instanceof THREE.Mesh) {
+				frameObj = child.material[0];
+				seatObj = child.material[1];
+				child.material[0].map = mainMaterialWood;
+				child.material[1].map = mainMaterialSeat;
+				child.material.needsUpdate = true;
+				console.log(child);
+			}
+		}); 
+		scene.add( object );
+	} , undefined , function ( e ) {
+		console.log( e );
+	}); 
+	
+}
+
 function loadObject()
 {
+	cameraControls.reset();
+	RemvePreviousObject();
 	var loader = new THREE.FBXLoader();
-	loader.load( './assets/models3d/chair normal.fbx', function ( object ) {
+	loader.load( './assets/models3d/chair_uv.fbx', function ( object ) {
 	object.position.set(0,-25,0);
+	object.name = "Chair";
+	var mainMaterialSeat = new THREE.TextureLoader().load(selectedSeatObject.src );
+	mainMaterialSeat.wrapS = THREE.RepeatWrapping;
+	mainMaterialSeat.wrapT = THREE.RepeatWrapping;
+	mainMaterialSeat.repeat.set( 1, 1 );
+	var metalSeat = new THREE.TextureLoader().load('./assets/materials/seat/metal.png');
+	var roughSeat = new THREE.TextureLoader().load( './assets/materials/seat/roughness.png' );
+	var normalSeat = new THREE.TextureLoader().load('./assets/materials/seat/normal.png' );
 	
-	var mainMaterial = new THREE.TextureLoader().load( './assets/materials/m1.png' );
-	var metal = new THREE.TextureLoader().load('./assets/materials/metallic.png');
-	var rough = new THREE.TextureLoader().load( './assets/materials/roughness.png' );
-	var normal = new THREE.TextureLoader().load('./assets/materials/normal.png' );
+	var mainMaterialFrame = new THREE.TextureLoader().load( selectedFrameObject.src );
+	mainMaterialFrame.wrapS = THREE.RepeatWrapping;
+	mainMaterialFrame.wrapT = THREE.RepeatWrapping;
+	mainMaterialFrame.repeat.set( 1, 1 );
+	var metalFrame = new THREE.TextureLoader().load('./assets/materials/wood/metal.png');
+	var roughFrame = new THREE.TextureLoader().load( './assets/materials/wood/roughness.png' );
+	var normalFrame = new THREE.TextureLoader().load('./assets/materials/wood/normal.png' );
 	
 		object.traverse(function (child) {
 			if (child instanceof THREE.Mesh) {
-				if(child.name == "seat1"){
-					seatObj = child;
-					const sphereMaterial1 = new THREE.MeshStandardMaterial();
-					sphereMaterial1.metalnessMap = metal;
-					sphereMaterial1.roughnessMap = rough;
-					sphereMaterial1.roughness = 1;
-					sphereMaterial1.normalMap = normal;
-					sphereMaterial1.map = mainMaterial;
-					child.material = sphereMaterial1;
+				if(child.name == "polySurface13"){ // seat
+					const seatMaterial = new THREE.MeshStandardMaterial();
+					seatMaterial.metalnessMap = metalSeat;
+					seatMaterial.roughnessMap = roughSeat;
+					seatMaterial.roughness = 1;
+					seatMaterial.normalMap = normalSeat;
+					seatMaterial.map = mainMaterialSeat;
+					child.material = seatMaterial;
 					child.castShadow = true;
 					child.receiveShadow = true;
+					seatObj = child.material;
 				}
-				else if(child.name == "wood1"){
-					frameObj = child;
-					const sphereMaterial1 = new THREE.MeshStandardMaterial();
-					sphereMaterial1.metalnessMap = metal;
-					//sphereMaterial1.roughnessMap = rough;
-					sphereMaterial1.roughness = 0.4;
-					sphereMaterial1.metalness = 0.9;
-					sphereMaterial1.normalMap = normal;
-					sphereMaterial1.map = mainMaterial;
-					child.material = sphereMaterial1;
+				else if(child.name == "polySurface10"){ // Frame
+					const frameMaterial = new THREE.MeshStandardMaterial();
+					frameMaterial.metalnessMap = metalFrame;
+					//frameMaterial.roughnessMap = roughFrame;
+					frameMaterial.roughness = 0.4;
+					frameMaterial.metalness = 0.9;
+					frameMaterial.normalMap = normalFrame;
+					frameMaterial.map = mainMaterialFrame;
+					child.material = frameMaterial;
 					child.castShadow = true;
 					child.receiveShadow = true;
+					frameObj = child.material;
 				}
 				//child.castShadow = true;
 				//child.receiveShadow = false;
 				//child.material = sphereMaterial1;
-				/* child.material.metalnessMap = metal;
-				child.material.roughnessMap = rough;
-				child.material.normalMap = normal;
-				child.material.map = mainMaterial; */
+				//child.material.metalnessMap = metal;
+				//child.material.roughnessMap = rough;
+				//child.material.normalMap = normal;
+				//child.material.map = mainMaterial;
 				child.material.needsUpdate = true;
 				console.log(child);
 			}
@@ -168,19 +220,20 @@ function loadObject()
 }
 
 var animate = function animate() {
-  //const delta = clock.getDelta();
-  //const hasControlsUpdated = cameraControls.update( delta );
+  const delta = clock.getDelta();
+  const hasControlsUpdated = cameraControls.update( delta );
   
     //console.log(camera.position);
 	requestAnimationFrame( animate );
-	cameraControls.update();
+	//cameraControls.update();
 	renderer.render( scene, camera );
 };
 
 function start()
 {
   init();
-  loadObject();
+  //loadObject();
+  loadClientObject();
   animate();
 }
 

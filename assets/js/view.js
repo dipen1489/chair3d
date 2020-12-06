@@ -12,9 +12,11 @@
 	'use strict';
 	var viewFrames = [];
 	var viewSeats = [];
+	var selectedFrameObject = {};
+	var selectedSeatObject = {};
 	
 $( document ).ready(function() {
-	start();
+	
 	
 	const canvas 	= $('#canvas');
 	const controls= $('#controls');
@@ -22,15 +24,41 @@ $( document ).ready(function() {
 	const selectedFrame = $('.frame.selected');
 	const selectedSeat 	= $('.seat.selected');
 	
+	selectedFrameObject = {title : 'Frame1',thumb:'./assets/materials/WoodTexture/wood_red_brown_thumb.jpg', src:'./assets/materials/WoodTexture/wood_red_brown.jpg'};
+	
+	selectedSeatObject = {title : 'Seat5',thumb:'./assets/materials/SeatTexture/sofa_leather3_thumb.jpg', src:'./assets/materials/SeatTexture/sofa_leather3.jpg'};
+	
+	$('.frame.selected').html($('<img>').attr({'src':selectedFrameObject.src,class:''}));
+	$('.seat.selected').html($('<img>').attr({'src':selectedSeatObject.src,class:''}));
+	
+	start();
+	
+	//$('.frame.selected').html($('<img>').attr({'src':'./assets/materials/WoodTexture/wooden-wood-backgrounds-textured-pattern-wallpaper-concept.jpg',class:''}));
+	//$('.seat.selected').html($('<img>').attr({'src':'./assets/materials/SeatTexture/fabric-textured-background.jpg',class:''}));
+	
 	
 	const frames = {title : "FRAME FINISH OPTIONS", id: 'frames', materials : [
-		{name : 'Wooden Frames', materials:[{title : 'Frame1',thumb:'assets/images/m1Frame.png', src:'./assets/materials/m1.png'},{title : 'Frame2', thumb:'assets/images/m2Feame.png', src:'./assets/materials/m2.png'}]}
-					]};
+	{name : 'Wooden Frames', materials:[
+		{title : 'Frame1',thumb:'./assets/materials/WoodTexture/abstract-surface-wood-texture-background_thumb.jpg', src:'./assets/materials/WoodTexture/abstract-surface-wood-texture-background.jpg'},
+		{title : 'Frame1',thumb:'./assets/materials/WoodTexture/brown-wooden-floor_thumb.jpg', src:'./assets/materials/WoodTexture/brown-wooden-floor.jpg'},
+		{title : 'Frame1',thumb:'./assets/materials/WoodTexture/brown-wooden-flooring_thumb.jpg', src:'./assets/materials/WoodTexture/brown-wooden-flooring.jpg'},
+		{title : 'Frame1',thumb:'./assets/materials/WoodTexture/scratched-beige-wooden-textured_thumb.jpg', src:'./assets/materials/WoodTexture/scratched-beige-wooden-textured.jpg'},
+		{title : 'Frame1',thumb:'./assets/materials/WoodTexture/wooden-wood-backgrounds-textured-pattern-wallpaper-concept_thumb.jpg', src:'./assets/materials/WoodTexture/wooden-wood-backgrounds-textured-pattern-wallpaper-concept.jpg'},
+		{title : 'Frame1',thumb:'./assets/materials/WoodTexture/wood_red_brown_thumb.jpg', src:'./assets/materials/WoodTexture/wood_red_brown.jpg'}
+		]}
+	]};
 	var allFrames = frames.materials;
 	
-	const seats = {title : "FRAME FINISH OPTIONS", id: 'seats', materials : [
-	{name : 'Leather Seats', materials:[{title : 'Seat1',thumb:'assets/images/m1Seat.png', src:'./assets/materials/m1.png'},{title : 'Seat2',thumb:'assets/images/m2Seat.png', src:'./assets/materials/m2.png'}]}
-			]};
+	const seats = {title : "SEAT FINISH OPTIONS", id: 'seats', materials : [
+	{name : 'Leather Seats', materials:[
+		{title : 'Seat1',thumb:'./assets/materials/SeatTexture/fabric-textured-background_thumb.jpg', src:'./assets/materials/SeatTexture/fabric-textured-background.jpg'},
+		{title : 'Seat2',thumb:'./assets/materials/SeatTexture/fabric-textured-background1_thumb.jpg', src:'./assets/materials/SeatTexture/fabric-textured-background1.jpg'},
+		{title : 'Seat3',thumb:'./assets/materials/SeatTexture/fabric-textured-background2_thumb.jpg', src:'./assets/materials/SeatTexture/fabric-textured-background2.jpg'},
+		{title : 'Seat4',thumb:'./assets/materials/SeatTexture/greenish-brown-linen-textile-textured_thumb.jpg', src:'./assets/materials/SeatTexture/greenish-brown-linen-textile-textured.jpg'},
+		{title : 'Seat5',thumb:'./assets/materials/SeatTexture/white-texture-background_thumb.jpg', src:'./assets/materials/SeatTexture/white-texture-background.jpg'},
+		{title : 'Seat5',thumb:'./assets/materials/SeatTexture/sofa_leather3_thumb.jpg', src:'./assets/materials/SeatTexture/sofa_leather3.jpg'}
+		]}
+	]};
 	
 	var allSeats = seats.materials;
 	
@@ -109,11 +137,14 @@ function generateNestedHTML(container, objectArr, type){
 }
 
 function updateFrame(obj){
-	
+	selectedFrameObject = obj;
 	console.log('Update Frame :',obj);
 	var mainMaterial = new THREE.TextureLoader().load(obj.src);
+	mainMaterial.wrapS = THREE.RepeatWrapping;
+	mainMaterial.wrapT = THREE.RepeatWrapping;
+	mainMaterial.repeat.set( 1, 1 );
 	//seatObj.material.map = mainMaterial;
-	frameObj.material.map = mainMaterial;
+	frameObj.map = mainMaterial;
 	//frameObj.material[2].map = mainMaterial;
 	//seatObj , frameObj;
 	
@@ -128,9 +159,13 @@ function updateFrame(obj){
 }
 
 function updateSeat(obj){
+	selectedSeatObject = obj;
 	console.log('Update Seat :',obj);
 	var mainMaterial = new THREE.TextureLoader().load(obj.src);
-	seatObj.material.map = mainMaterial;
+	mainMaterial.wrapS = THREE.RepeatWrapping;
+	mainMaterial.wrapT = THREE.RepeatWrapping;
+	mainMaterial.repeat.set( 1, 1 );
+	seatObj.map = mainMaterial;
 	//frameObj.material[0].map = mainMaterial;
 }
 
