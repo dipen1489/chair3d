@@ -39,10 +39,12 @@ function init()
 	if(getMobileOperatingSystem() == "unknown"){
 		cameraControls = new CameraControls( camera, renderer.domElement );
 		cameraControls.dollyToCursor = true;
+		cameraControls.maxDistance = 150;
 	}
 	else{
 		cameraControls = new THREE.OrbitControls( camera, renderer.domElement );
 		cameraControls.enablePan = false;
+		cameraControls.maxDistance = 150;
 	}
 	
 	var ambientLight = new THREE.AmbientLight( 0xffffff, 0.5 );
