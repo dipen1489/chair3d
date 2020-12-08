@@ -84,6 +84,31 @@ function RemvePreviousObject(){
 	}
 }
 
+function loadSofaObject()
+{
+	$(".loadingImageContainerStyle").css("display","block");
+	cameraControls.reset();
+	RemvePreviousObject();
+	var loader = new THREE.FBXLoader();
+	var mainMaterialWood = new THREE.TextureLoader().load( './assets/Sofa/rtt2.png');
+	loader.load( './assets/Sofa/sofa xiu.fbx', function ( object ) {
+	object.name = "Chair";
+	object.position.set(-25,0,0);
+	object.scale.set(0.033,0.033,0.033);
+		object.traverse(function (child) {
+			if (child instanceof THREE.Mesh) {
+				console.log(child);
+				child.material.map = mainMaterialWood;
+			}
+		});  
+		$(".loadingImageContainerStyle").css("display","none");
+		scene.add( object );
+	} , undefined , function ( e ) {
+		console.log( e );
+		$(".loadingImageContainerStyle").css("display","none");
+	}); 
+}
+
 function loadClientObject()
 {
 	$(".loadingImageContainerStyle").css("display","block");
@@ -252,7 +277,8 @@ function getMobileOperatingSystem() {
 function start()
 {
 	init();
-	loadClientObject();
+	//loadClientObject();
+	loadSofaObject();
 	animate();
 }
 
