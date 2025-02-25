@@ -109,6 +109,50 @@ function loadSofaObject()
 	}); 
 }
 
+async function loadTableObject()
+{
+	$(".loadingImageContainerStyle").css("display","block");
+	var frameTexture = await LoadTexture(selectedFrameObject.src , './assets/table/fbx/texture_rough.png' , './assets/table/fbx/texture_metal.png' , './assets/table/fbx/texture_normal.png', './assets/table/fbx/texture_diff.png' );
+	
+	cameraControls.reset();
+	RemvePreviousObject();
+	var loader = new THREE.FBXLoader();
+	loader.load( './assets/table/fbx/table.fbx', function ( object ) {
+	object.position.set(0,-30,0);
+	object.scale.set(0.4,0.4,0.4);
+	object.rotation.set(0, THREE.MathUtils.degToRad(90), 0);
+	object.name = "Chair";
+	object.traverse(function (child) {
+		if (child instanceof THREE.Mesh) {
+			console.log('child.name : ', child.name)
+			 if(child.name == "pCube6"){ // Frame
+				const frameMaterial = new THREE.MeshStandardMaterial();
+				frameMaterial.metalnessMap = frameTexture.metal.val;
+				//frameMaterial.roughnessMap = roughFrame;
+				frameMaterial.roughness = 0.4;
+				frameMaterial.metalness = 0.2;
+				frameMaterial.normalMap = frameTexture.normal.val;
+				frameMaterial.map = frameTexture.map.val;
+				frameMaterial.map.wrapS = THREE.RepeatWrapping;
+				frameMaterial.map.wrapT = THREE.RepeatWrapping;
+				frameMaterial.map.repeat.set( 1, 1 );
+				child.material = frameMaterial;
+				child.castShadow = true;
+				child.receiveShadow = true;
+				frameObj = child.material;
+			}
+			child.material.needsUpdate = true;
+		}
+	}); 
+	$(".loadingImageContainerStyle").css("display","none");
+	scene.add( object );
+	
+	} , undefined , function ( e ) {
+		console.log( e );
+		$(".loadingImageContainerStyle").css("display","none");
+	}); 
+}
+
 function loadClientObject()
 {
 	$(".loadingImageContainerStyle").css("display","block");
@@ -278,7 +322,7 @@ function start()
 {
 	init();
 	//loadClientObject();
-	loadSofaObject();
+	loadTableObject();
 	animate();
 }
 
